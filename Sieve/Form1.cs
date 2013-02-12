@@ -39,22 +39,43 @@ namespace Sieve
                 i.Draw(graphics);
             graphics.Dispose();
         }
+        private int FindFirstFree()
+        {
+            foreach (Integer i in list)
+                if (i.color == Color.LightGray)
+                    return i.value;
+            return -1;
+        }
+        public void Clear()
+        {
+            for (int i = 2; i <= maxState; ++i)
+                list[i - 1].color = Color.LightGray;
+            prime = 2;
+            current = prime;
+
+        }
         private void tick(object sender, System.EventArgs e)
         {
-            list[current-1].SetColor(Color.Wheat);
+            if (current == prime)
+                list[current-1].SetColor(Color.Red);
+            else
+                list[current - 1].SetColor(Color.Wheat);
+
             current += prime;
-            if (current >= maxState)
+            if (current > maxState)
             {
-                current = 3;
-                prime = 3;
+                prime = FindFirstFree();
+                current = prime;
+                if (prime == -1)
+                    Clear();
             }
             this.Invalidate();  // Optimize?
         }
     }
     public class Integer
     {
-        int value;
-        Color color;
+        public int value;
+        public Color color;
         const int dx = 25;
         const int dy = 25;
         const int border = 5;
