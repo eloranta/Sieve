@@ -13,9 +13,10 @@ namespace Sieve
     public partial class Form1 : Form
     {
         List<Integer> list = new List<Integer>();
-        const int maxState = 40;
+        const int maxState = 120;
         int prime = 2;
         int current = 2;
+        Timer timer = new Timer();
         public Form1()
         {
             InitializeComponent();
@@ -27,8 +28,7 @@ namespace Sieve
             for (int i = 2; i <= maxState; ++i)
                 list.Add(new Integer(i, Color.LightGray));
 
-            Timer timer = new Timer();
-            timer.Interval = 1000;
+            timer.Interval = 500;
             timer.Tick += new EventHandler(tick);
             timer.Start();
         }
