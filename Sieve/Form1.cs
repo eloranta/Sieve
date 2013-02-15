@@ -28,7 +28,7 @@ namespace Sieve
             for (int i = 2; i <= maxState; ++i)
                 list.Add(new Integer(i, Color.LightGray));
 
-            timer.Interval = 500;
+            timer.Interval = 100;
             timer.Tick += new EventHandler(tick);
             timer.Start();
         }
@@ -36,7 +36,8 @@ namespace Sieve
         {
             Graphics graphics = this.CreateGraphics();
             foreach (Integer i in list)
-                i.Draw(graphics);
+                if (e.ClipRectangle.IntersectsWith(i.Rectangle()) == true)
+                    i.Draw(graphics);
             graphics.Dispose();
         }
         private int FindFirstFree()
@@ -57,9 +58,10 @@ namespace Sieve
         private void tick(object sender, System.EventArgs e)
         {
             if (current == prime)
-                list[current-1].SetColor(Color.Red);
+                list[current - 1].SetColor(Color.Red);
             else
                 list[current - 1].SetColor(Color.Wheat);
+            list[current - 1].Invalidate(this);
 
             current += prime;
             if (current > maxState)
@@ -67,9 +69,12 @@ namespace Sieve
                 prime = FindFirstFree();
                 current = prime;
                 if (prime == -1)
+                {
                     Clear();
+                    Invalidate();
+                    return;
+                }
             }
-            this.Invalidate();  // Optimize?
         }
     }
     public class Integer
@@ -105,6 +110,16 @@ namespace Sieve
         public void SetColor(Color color)
         {
             this.color = color;
+        }
+        public void Invalidate(Form1 form)
+        {
+            form.Invalidate(Rectangle());
+        }
+        public Rectangle Rectangle()
+        {
+            int x = margin + border + ((value - 1) % 10) * (dx + border);
+            int y = margin + border + ((value - 1) / 10) * (dy + border);
+            return new Rectangle(x, y, dx, dy);
         }
     }
 }
